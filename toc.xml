@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Addon Author="Xeio" APIVersion="9" Name="Outbid" Description="Relist your market orders to outbid your opponents">
+    <Script Name="libs\GeminiLogging\GeminiLogging.lua"/>
+    <Script Name="libs\GeminiHook\GeminiHook-1.0.lua"/>
+    <Script Name="libs\GeminiAddon\GeminiAddon.lua"/>
+    <Script Name="Outbid.lua"/>
+    <Form Name="Outbid.xml"/>
+</Addon>
