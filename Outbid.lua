@@ -5,16 +5,12 @@ require "MarketplaceLib"
 require "Money"
 
 local Outbid = Apollo.GetPackage("Gemini:Addon-1.1").tPackage:NewAddon("Outbid", true, 
-																{ 
-																	--"MarketplaceCommodity",
-																	--"MarketplaceCREDD",
-																	"MarketplaceListings",
-																	"Gemini:Logging-1.2"
-																	--"Gemini:Locale-1.0",                                                        
-																	--"Drafto:Lib:PixiePlot-1.4"
-																},
-																"Gemini:Hook-1.0"
-															)
+	{ 
+		"MarketplaceListings",
+		"Gemini:Logging-1.2"
+	},
+	"Gemini:Hook-1.0"
+)
 															
 function Outbid:OnInitialize()
     -- load our form file
@@ -22,7 +18,7 @@ function Outbid:OnInitialize()
 	self.xmlDoc:RegisterCallback("OnDocLoaded", self)
 	GeminiLogging = Apollo.GetPackage("Gemini:Logging-1.2").tPackage
     logger = GeminiLogging:GetLogger({
-        level = GeminiLogging.INFO,
+        --level = GeminiLogging.INFO,
         appender = "GeminiConsole"
     })
 
@@ -46,15 +42,6 @@ function Outbid:OnDocLoaded()
 		
 	    self.wndMain:Show(false, true)
 
-		-- if the xmlDoc is no longer needed, you should set it to nil
-		-- self.xmlDoc = nil
-		
-		-- Register handlers for events, slash commands and timer, etc.
-		-- e.g. Apollo.RegisterEventHandler("KeyDown", "OnKeyDown", self)
-
-
-		-- Do additional Addon initialization here
-		
 		self:Hook(Apollo.GetAddon("MarketplaceListings"), "OnOwnedCommodityOrders")
 		self:PostHook(Apollo.GetAddon("MarketplaceListings"), "BuildCommodityOrder")
 	end
@@ -63,13 +50,10 @@ end
 function Outbid:BuildCommodityOrder(luaCaller, nIdx, aucCurrent, wndParent)
 	self.orderListWindow = wndParent
 	local item = aucCurrent:GetItem()
-	--logger:info("Found item listing:" .. item:GetName())
 	MarketplaceLib.RequestCommodityInfo(item:GetItemId())
 end
 
 function Outbid:OnCommodityInfoResults(nItemId, tStats, tOrders)
-	self.stats = tStats
-	
 	for idx, order in pairs(self.orders) do
 		if order:GetItem():GetItemId() == nItemId then
 			local orderPrice = order:GetPricePerUnit()
@@ -132,18 +116,10 @@ function Outbid:HaveMatchingOrderPrice(itemId, price)
 	return false
 end
 
----------------------------------------------------------------------------------------------------
--- RelistBuyButton Functions
----------------------------------------------------------------------------------------------------
-function Outbid:RelistBuyClick(wndHandler, wndControl, eMouseButton )
-	local order = wndHandler:GetData()
-	if not order then
+function Outbid:SubmittedBuyOrder( wndHandler, wndControl, bSuccess )
+	if not bSuccess then
 		return
 	end
-	order:Cancel()
-end
-
-function Outbid:SubmittedOrder( wndHandler, wndControl, bSuccess )
 	local order = wndHandler:GetData()
 	if not order then
 		return
