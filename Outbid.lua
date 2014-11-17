@@ -54,6 +54,10 @@ function Outbid:BuildCommodityOrder(luaCaller, nIdx, aucCurrent, wndParent)
 end
 
 function Outbid:OnCommodityInfoResults(nItemId, tStats, tOrders)
+	if not self.orders or not self.orderListWindow or not self.orderListWindow:IsValid() then
+		return
+	end
+
 	for idx, order in pairs(self.orders) do
 		if order:GetItem():GetItemId() == nItemId then
 			local orderPrice = order:GetPricePerUnit()
@@ -75,7 +79,7 @@ function Outbid:OnCommodityInfoResults(nItemId, tStats, tOrders)
 					else
 						newPrice:SetAmount(topPrice:GetAmount() + 1)
 					end
-					self:CreateBuyOrder(newButton, nItemId, newPrice, order:GetCount())
+					self:CreateBuyOrderCommand(newButton, nItemId, newPrice, order:GetCount())
 				end
 			else
 				--topPrice = tStats.arSellOrderPrices[1]
@@ -88,7 +92,7 @@ function Outbid:OnOwnedCommodityOrders(luaCaller, tOrders)
 	self.orders = tOrders
 end
 
-function Outbid:CreateBuyOrder(button, itemId, price, amount)
+function Outbid:CreateBuyOrderCommand(button, itemId, price, amount)
 	--local orderNew = bBuyTab and CommodityOrder.newBuyOrder(tCurrItem:GetItemId()) or CommodityOrder.newSellOrder(tCurrItem:GetItemId())
 	local orderNew = CommodityOrder.newBuyOrder(itemId)
 	if price and amount then
