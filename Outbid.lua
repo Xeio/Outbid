@@ -118,13 +118,10 @@ function Outbid:OnOwnedCommodityOrders(luaCaller, tOrders)
 end
 
 function Outbid:CreateOrderCommand(orderType, button, itemId, price, amount)
-	--local orderNew = bBuyTab and CommodityOrder.newBuyOrder(tCurrItem:GetItemId()) or CommodityOrder.newSellOrder(tCurrItem:GetItemId())
-	
 	local orderNew = orderType == "buy" and CommodityOrder.newBuyOrder(itemId) or CommodityOrder.newSellOrder(itemId)
 	if price and amount then
 		orderNew:SetCount(amount)
 		orderNew:SetPrices(price)
-		--orderNew:SetForceImmediate(self.wndMain:FindChild("HeaderBuyNowBtn"):IsChecked() or self.wndMain:FindChild("HeaderSellNowBtn"):IsChecked())
 	end
 
 	if not orderNew:CanPost() then
@@ -168,7 +165,6 @@ function Outbid:RelistSellClick( wndHandler, wndControl, eMouseButton )
 	self.oldSellOrder = order
 	self.readyToResell = false
 	self:BuildTimer("SellMailTimer")
-	--MailSystemLib.GetInbox()[1]:GetMessageInfo().arAttachments
 end
 
 function Outbid:BuildTimer(timerFunc)
@@ -176,7 +172,7 @@ function Outbid:BuildTimer(timerFunc)
 		self.timer:Stop()
 		self.timer = nil
 	end
-	self.timer = ApolloTimer.Create(0.5, true, timerFunc, self)
+	self.timer = ApolloTimer.Create(0.2, true, timerFunc, self)
 end
 
 function Outbid:SellMailTimer()
