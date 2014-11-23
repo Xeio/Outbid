@@ -153,7 +153,8 @@ function Outbid:SubmittedBuyOrder( wndHandler, wndControl, bSuccess )
 	end
 	order:Cancel()
 	
-	--self:BuildTimer("BuyMailTimer")
+	self.oldBuyOrder = order
+	self:BuildTimer("BuyMailTimer")
 end
 
 function Outbid:RelistSellClick( wndHandler, wndControl, eMouseButton )
@@ -162,6 +163,7 @@ function Outbid:RelistSellClick( wndHandler, wndControl, eMouseButton )
 		return
 	end
 	order:Cancel()
+	
 	self.oldSellOrder = order
 	self.readyToResell = false
 	self:BuildTimer("SellMailTimer")
@@ -173,6 +175,28 @@ function Outbid:BuildTimer(timerFunc)
 		self.timer = nil
 	end
 	self.timer = ApolloTimer.Create(0.2, true, timerFunc, self)
+end
+
+function Outbid:BuyMailTimer()
+	if not self.oldBuyOrder then
+		self.timer:Stop()
+	end
+	
+	--Fetch the money from the cancel mail
+	local mails = MailSystemLib.GetInbox()
+	local oldItemName = self.oldBuyOrder:GetItem():GetName()
+	
+	for idx, mail in pairs(mails) do
+		local mailInfo = mail:GetMessageInfo()
+		oldItemName = string.gsub(oldItemName, "%-", ".")
+		if string.find(mailInfo.strSubject, "Buy") and string.find(mailInfo.strBody, oldItemName) then
+			mail:TakeMoney()
+			mail:DeleteMessage()
+			self.timer:Stop()
+			self.oldBuyOrder = nil
+			break
+		end
+	end
 end
 
 function Outbid:SellMailTimer()
@@ -187,9 +211,11 @@ function Outbid:SellMailTimer()
 	for idx, mail in pairs(mails) do
 		if self:IsItemAttached(mail, oldItemId) then
 			mail:TakeAllAttachments()
+			mail:DeleteMessage()
 			self.timer:Stop()
 			self.readyToResell = true
 			MarketplaceLib.RequestCommodityInfo(oldItemId) --Re-trigger a market check to relist
+			break
 		end
 	end
 end
