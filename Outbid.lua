@@ -188,8 +188,8 @@ function Outbid:BuyMailTimer()
 	
 	for idx, mail in pairs(mails) do
 		local mailInfo = mail:GetMessageInfo()
-		oldItemName = string.gsub(oldItemName, "%-", ".")
-		if string.find(mailInfo.strSubject, "Buy") and string.find(mailInfo.strBody, oldItemName) then
+		local searchPattern = self:GetItemSearchPattern(oldItemName)
+		if string.find(mailInfo.strSubject, "Buy") and string.find(mailInfo.strBody, searchPattern) then
 			mail:TakeMoney()
 			mail:DeleteMessage()
 			self.timer:Stop()
@@ -197,6 +197,12 @@ function Outbid:BuyMailTimer()
 			break
 		end
 	end
+end
+
+function Outbid:GetItemSearchPattern(itemName)
+	itemName = string.gsub(itemName, "%-", ".") --Dash is special character, replace with dot
+	itemName = string.gsub(itemName, "Sign ", "Signs? ") --Possible pluralized word
+	return itemName
 end
 
 function Outbid:SellMailTimer()
