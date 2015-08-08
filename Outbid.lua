@@ -65,6 +65,7 @@ function Outbid:OnCommodityInfoResults(nItemId, tStats, tOrders)
 			
 			self:CreateOrderCommand("sell", sellButton, nItemId, newPrice, self.oldSellOrder:GetCount())
 			
+			self.sellDialog:FindChild("SellText"):SetText(self.oldSellOrder:GetItem():GetName())
 			self.sellDialog:FindChild("UnitPrice"):SetAmount(newPrice:GetAmount(), true)
 			self.sellDialog:Invoke()
 			
