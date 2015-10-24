@@ -40,7 +40,7 @@ function Outbid:OnDocLoaded()
 end
 
 function Outbid:BuildCommodityOrder(luaCaller, nIdx, aucCurrent, wndParent)
-	self.orderListWindow = wndParent
+	self.orderListWindow = wndParent:GetParent():GetParent()
 	local item = aucCurrent:GetItem()
 	MarketplaceLib.RequestCommodityInfo(item:GetItemId())
 end
@@ -238,12 +238,16 @@ function Outbid:IsItemAttached(mail, itemId)
 end
 
 function Outbid:SellCancelClick( wndHandler, wndControl, eMouseButton )
-	self.sellDialog:Destroy()
-	self.sellDialog = nil
+	if self.sellDialog then
+        self.sellDialog:Destroy()
+        self.sellDialog = nil
+    end
 end
 
 function Outbid:SellOrderSubmitted( wndHandler, wndControl, bSuccess )
-	self.sellDialog:Destroy()
-	self.sellDialog = nil
+    if self.sellDialog then
+        self.sellDialog:Destroy()
+        self.sellDialog = nil
+    end
 end
 
