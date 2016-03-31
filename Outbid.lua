@@ -32,11 +32,17 @@ end
 -- Outbid OnDocLoaded
 -----------------------------------------------------------------------------------------------
 function Outbid:OnDocLoaded()
-
 	if self.xmlDoc ~= nil and self.xmlDoc:IsLoaded() then
 		self:Hook(Apollo.GetAddon("MarketplaceListings"), "OnOwnedCommodityOrders")
 		self:PostHook(Apollo.GetAddon("MarketplaceListings"), "BuildCommodityOrder")
+		self:PostHook(Apollo.GetAddon("MarketplaceListings"), "OnToggleFromAuctionHouse")
 	end
+end
+
+function Outbid:OnToggleFromAuctionHouse(luaCaller)
+	local marketplaceListings = Apollo.GetAddon("MarketplaceListings")
+	marketplaceListings.wndBtnAuctionListing:SetCheck(false)
+	marketplaceListings.wndBtnCommodityListing:SetCheck(true)
 end
 
 function Outbid:BuildCommodityOrder(luaCaller, nIdx, aucCurrent, wndParent)
